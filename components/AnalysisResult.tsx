@@ -36,7 +36,7 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
               종합 점수: {result.overallScore}점
             </div>
           </div>
-          <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+          <p className="text-gray-800 text-sm md:text-base leading-relaxed">
             {result.summary}
           </p>
         </div>
