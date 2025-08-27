@@ -1,0 +1,25 @@
+### AI 기반 포트폴리오 분석 요청
+
+# API 키를 인증 헤더에 추가합니다.
+@api_key = YOUR_API_KEY_STRING
+@base_url = [MSA-BRAIN-GEMINI-URL]
+
+POST {{base_url}}/gemini/analyze_portfolio
+Content-Type: application/json
+x-api-key: {{api_key}}
+
+{
+  "githubUrl": "https://github.com/rakaso598/msa-self-dashboard-gemini",
+  "blogUrl": "https://your-blog.tistory.com/123",
+  "resumeText": "저는 AI와 MSA에 관심이 많은 신입 개발자입니다. 다양한 기술을 활용하여 실용적인 프로젝트를 만들고 문제 해결 능력을 키우고 있습니다."
+}
+
+### 유효하지 않은 요청 예시 (필수 필드 누락)
+
+POST {{base_url}}/gemini/analyze_portfolio
+Content-Type: application/json
+x-api-key: {{api_key}}
+
+{
+  "blogUrl": "https://your-blog.tistory.com/123"
+}
