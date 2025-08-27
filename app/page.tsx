@@ -1,102 +1,113 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { PortfolioAnalysisRequest, PortfolioAnalysisResponse } from '@/types/portfolio';
+import { analyzePortfolio, PortfolioApiError } from '@/lib/api';
+import PortfolioForm from '@/components/PortfolioForm';
+import AnalysisResult from '@/components/AnalysisResult';
+import ErrorDisplay from '@/components/ErrorDisplay';
+
+type AppState = 'form' | 'loading' | 'result' | 'error';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [state, setState] = useState<AppState>('form');
+  const [result, setResult] = useState<PortfolioAnalysisResponse | null>(null);
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleFormSubmit = async (data: PortfolioAnalysisRequest) => {
+    setIsLoading(true);
+    setState('loading');
+    setError('');
+
+    try {
+      const analysisResult = await analyzePortfolio(data);
+      setResult(analysisResult);
+      setState('result');
+    } catch (err) {
+      const errorMessage = err instanceof PortfolioApiError
+        ? err.message
+        : '알 수 없는 오류가 발생했습니다.';
+
+      setError(errorMessage);
+      setState('error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleNewAnalysis = () => {
+    setState('form');
+    setResult(null);
+    setError('');
+  };
+
+  const handleRetry = () => {
+    setState('form');
+    setError('');
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        {state === 'form' && (
+          <PortfolioForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+        )}
+
+        {state === 'loading' && (
+          <div className="w-full max-w-2xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12">
+              <div className="text-center">
+                <div className="flex justify-center mb-8">
+                  <div className="relative">
+                    <div className="w-20 h-20 border-4 border-blue-200 rounded-full"></div>
+                    <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                  </div>
+                </div>
+
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                  🤖 AI가 분석 중입니다
+                </h2>
+
+                <div className="space-y-3 text-gray-600">
+                  <p className="text-lg">포트폴리오를 꼼꼼히 살펴보고 있어요</p>
+                  <div className="flex items-center justify-center space-x-2 text-sm">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span>코드 품질, 문서화, 구조 등을 분석하는 중...</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 p-4 bg-blue-50 rounded-xl">
+                  <p className="text-sm text-blue-800">
+                    <span className="font-semibold">💡 잠깐!</span> 분석에는 보통 30초~1분 정도 소요됩니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {state === 'result' && result && (
+          <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
+        )}
+
+        {state === 'error' && (
+          <ErrorDisplay error={error} onRetry={handleRetry} />
+        )}
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-100 mt-16">
+        <div className="container mx-auto px-4 py-6">
+          <div className="text-center text-gray-600 text-sm">
+            <p>🚀 MSA Portfolio Reviewer - AI 기반 포트폴리오 분석 서비스</p>
+            <p className="mt-1">더 나은 개발자로 성장하는 여정을 함께합니다</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
       </footer>
     </div>
   );
