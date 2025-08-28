@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { PortfolioAnalysisRequest } from '@/types/portfolio';
+import { useApiKey } from '@/contexts/ApiKeyContext';
 
 interface PortfolioFormProps {
   onSubmit: (data: PortfolioAnalysisRequest) => void;
@@ -9,6 +10,7 @@ interface PortfolioFormProps {
 }
 
 export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProps) {
+  const { isAuthenticated } = useApiKey();
   const [formData, setFormData] = useState<PortfolioAnalysisRequest>({
     githubUrl: '',
     blogUrl: '',
@@ -42,6 +44,11 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isAuthenticated) {
+      alert('먼저 상단에서 접근 키를 설정해주세요.');
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
@@ -72,12 +79,23 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
 
   return (
     <div className="w-full max-w-2xl mx-auto">
+      {!isAuthenticated && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-6">
+          <div className="flex items-center space-x-3">
+            <span className="text-2xl">🔒</span>
+            <div>
+              <h3 className="text-lg font-semibold text-yellow-800">접근 키 설정 필요</h3>
+              <p className="text-yellow-700 text-sm">
+                서비스를 이용하려면 상단의 접근 키 설정 버튼을 클릭하여 API 키를 입력해주세요.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            🔍 포트폴리오 AI 리뷰어
-          </h1>
-          <p className="text-gray-600 text-sm md:text-base">
+          <p className="text-gray-800 text-sm md:text-base">
             GitHub 프로젝트를 분석하고 전문적인 피드백을 받아보세요
           </p>
         </div>
@@ -85,7 +103,7 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* GitHub URL - Required */}
           <div>
-            <label htmlFor="githubUrl" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="githubUrl" className="block text-sm font-semibold text-gray-800 mb-2">
               GitHub 저장소 URL <span className="text-red-500">*</span>
             </label>
             <input
@@ -94,11 +112,11 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
               value={formData.githubUrl}
               onChange={(e) => handleInputChange('githubUrl', e.target.value)}
               placeholder="https://github.com/username/repository"
-              disabled={isLoading}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.githubUrl
+              disabled={isLoading || !isAuthenticated}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-600 ${errors.githubUrl
                   ? 'border-red-300 bg-red-50'
                   : 'border-gray-300 bg-white'
-                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${(isLoading || !isAuthenticated) ? 'opacity-50 cursor-not-allowed' : ''}`}
             />
             {errors.githubUrl && (
               <p className="mt-2 text-sm text-red-600">{errors.githubUrl}</p>
@@ -107,8 +125,8 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
 
           {/* Blog URL - Optional */}
           <div>
-            <label htmlFor="blogUrl" className="block text-sm font-semibold text-gray-700 mb-2">
-              블로그 게시물 URL <span className="text-gray-400 text-xs">(선택사항)</span>
+            <label htmlFor="blogUrl" className="block text-sm font-semibold text-gray-800 mb-2">
+              블로그 게시물 URL <span className="text-gray-500 text-xs">(선택사항)</span>
             </label>
             <input
               type="url"
@@ -116,16 +134,16 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
               value={formData.blogUrl}
               onChange={(e) => handleInputChange('blogUrl', e.target.value)}
               placeholder="https://your-blog.com/post"
-              disabled={isLoading}
-              className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white'
+              disabled={isLoading || !isAuthenticated}
+              className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-600 ${(isLoading || !isAuthenticated) ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white'
                 }`}
             />
           </div>
 
           {/* Resume Text - Optional */}
           <div>
-            <label htmlFor="resumeText" className="block text-sm font-semibold text-gray-700 mb-2">
-              이력서 내용 <span className="text-gray-400 text-xs">(선택사항)</span>
+            <label htmlFor="resumeText" className="block text-sm font-semibold text-gray-800 mb-2">
+              이력서 내용 <span className="text-gray-500 text-xs">(선택사항)</span>
             </label>
             <textarea
               id="resumeText"
@@ -133,8 +151,8 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
               onChange={(e) => handleInputChange('resumeText', e.target.value)}
               placeholder="간단한 자기소개나 경력사항을 입력해주세요..."
               rows={4}
-              disabled={isLoading}
-              className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ${isLoading ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white'
+              disabled={isLoading || !isAuthenticated}
+              className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none text-gray-900 placeholder-gray-600 ${(isLoading || !isAuthenticated) ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white'
                 }`}
             />
           </div>
@@ -142,7 +160,7 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || !formData.githubUrl.trim()}
+            disabled={isLoading || !formData.githubUrl.trim() || !isAuthenticated}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-purple-600"
           >
             {isLoading ? (
@@ -150,6 +168,8 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 <span>분석 중...</span>
               </div>
+            ) : !isAuthenticated ? (
+              '접근 키를 먼저 설정해주세요'
             ) : (
               '포트폴리오 분석 시작'
             )}

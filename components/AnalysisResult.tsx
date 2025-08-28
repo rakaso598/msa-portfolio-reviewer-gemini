@@ -36,7 +36,7 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
               종합 점수: {result.overallScore}점
             </div>
           </div>
-          <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+          <p className="text-gray-800 text-sm md:text-base leading-relaxed">
             {result.summary}
           </p>
         </div>
@@ -113,43 +113,38 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
         </div>
       </div>
 
-      {/* Documentation Feedback */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-          <span className="text-2xl mr-2">📚</span>
-          문서화 피드백
-        </h3>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* README Review */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-gray-800 flex items-center">
-              <span className="text-lg mr-2">📄</span>
-              README 리뷰
-            </h4>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {result.documentationFeedback.readmeReview}
-              </p>
+      {/* Project Analysis */}
+      {result.projectAnalysis && (
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <span className="text-2xl mr-2">🧩</span>
+            프로젝트 분석
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gray-50 rounded-xl p-4 text-center">
+              <div className="text-lg font-semibold text-gray-700 mb-2">복잡도</div>
+              <div className="text-2xl font-bold text-blue-700">{result.projectAnalysis.complexity}</div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 text-center">
+              <div className="text-lg font-semibold text-gray-700 mb-2">완성도</div>
+              <div className="text-2xl font-bold text-blue-700">{result.projectAnalysis.completeness}</div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 text-center">
+              <div className="text-lg font-semibold text-gray-700 mb-2">혁신성</div>
+              <div className="text-2xl font-bold text-blue-700">{result.projectAnalysis.innovation}</div>
             </div>
           </div>
-
-          {/* Blog Review */}
-          {result.documentationFeedback.blogReview && (
-            <div className="space-y-3">
-              <h4 className="font-semibold text-gray-800 flex items-center">
-                <span className="text-lg mr-2">✍️</span>
-                블로그 리뷰
-              </h4>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {result.documentationFeedback.blogReview}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
+
+      {/* Technical Stack (optional) */}
+      {result.technicalFeedback.techStack && (
+        <div className="bg-gray-50 rounded-xl p-4 mt-4">
+          <div className="text-gray-700 text-sm leading-relaxed">
+            <span className="font-semibold">기술 스택:</span> {result.technicalFeedback.techStack}
+          </div>
+        </div>
+      )}
 
       {/* Next Steps */}
       <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6 md:p-8">

@@ -53,7 +53,7 @@ export default function ErrorDisplay({ error, onRetry }: ErrorDisplayProps) {
 
           {/* Error Advice */}
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
-            <p className="text-gray-600 text-sm md:text-base">
+            <p className="text-gray-800 text-sm md:text-base">
               💡 {getErrorAdvice(error)}
             </p>
           </div>

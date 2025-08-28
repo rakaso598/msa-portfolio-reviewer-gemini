@@ -1,7 +1,6 @@
 import { PortfolioAnalysisRequest, PortfolioAnalysisResponse, ApiError } from '@/types/portfolio';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL;
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 class PortfolioApiError extends Error {
   constructor(message: string, public status?: number) {
@@ -10,13 +9,13 @@ class PortfolioApiError extends Error {
   }
 }
 
-export async function analyzePortfolio(data: PortfolioAnalysisRequest): Promise<PortfolioAnalysisResponse> {
+export async function analyzePortfolio(data: PortfolioAnalysisRequest, apiKey: string): Promise<PortfolioAnalysisResponse> {
   if (!API_BASE_URL) {
     throw new PortfolioApiError('API_BASE_URL 환경 변수가 설정되지 않았습니다.');
   }
 
-  if (!API_KEY) {
-    throw new PortfolioApiError('API_KEY 환경 변수가 설정되지 않았습니다.');
+  if (!apiKey) {
+    throw new PortfolioApiError('API 키가 설정되지 않았습니다. 헤더에서 접근 키를 설정해주세요.');
   }
 
   // URL validation
@@ -29,7 +28,7 @@ export async function analyzePortfolio(data: PortfolioAnalysisRequest): Promise<
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
+        'x-api-key': apiKey,
       },
       body: JSON.stringify(data),
     });
