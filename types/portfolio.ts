@@ -5,20 +5,26 @@ export interface PortfolioAnalysisRequest {
   resumeText?: string;
 }
 
+export interface ProjectAnalysis {
+  complexity: number;
+  completeness: number;
+  innovation: number;
+}
+
+export interface TechnicalFeedback {
+  codeReview: string;
+  bestPractices: string;
+  techStack?: string;
+}
+
 export interface PortfolioAnalysisResponse {
   summary: string;
   strengths: string[];
   weaknesses: string[];
-  technicalFeedback: {
-    codeReview: string;
-    bestPractices: string;
-  };
-  documentationFeedback: {
-    readmeReview: string;
-    blogReview?: string;
-  };
+  technicalFeedback: TechnicalFeedback;
   overallScore: number;
   nextSteps: string[];
+  projectAnalysis?: ProjectAnalysis;
 }
 
 export interface ApiError {
