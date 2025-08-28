@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { PortfolioAnalysisRequest, PortfolioAnalysisResponse } from '@/types/portfolio';
 import { analyzePortfolio, PortfolioApiError } from '@/lib/api';
+import { useApiKey } from '@/contexts/ApiKeyContext';
+import Header from '@/components/Header';
 import PortfolioForm from '@/components/PortfolioForm';
 import AnalysisResult from '@/components/AnalysisResult';
 import ErrorDisplay from '@/components/ErrorDisplay';
@@ -10,6 +12,7 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 type AppState = 'form' | 'loading' | 'result' | 'error';
 
 export default function Home() {
+  const { apiKey } = useApiKey();
   const [state, setState] = useState<AppState>('form');
   const [result, setResult] = useState<PortfolioAnalysisResponse | null>(null);
   const [error, setError] = useState<string>('');
@@ -21,7 +24,7 @@ export default function Home() {
     setError('');
 
     try {
-      const analysisResult = await analyzePortfolio(data);
+      const analysisResult = await analyzePortfolio(data, apiKey!);
       setResult(analysisResult);
       setState('result');
     } catch (err) {
@@ -49,6 +52,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <Header />
       <div className="container mx-auto px-4 py-8 md:py-12">
         {state === 'form' && (
           <PortfolioForm onSubmit={handleFormSubmit} isLoading={isLoading} />
