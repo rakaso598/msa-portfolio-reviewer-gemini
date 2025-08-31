@@ -1,6 +1,16 @@
 'use client';
 
 import { PortfolioAnalysisResponse } from '@/types/portfolio';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Button from '@mui/material/Button';
 
 interface AnalysisResultProps {
   result: PortfolioAnalysisResponse;
@@ -9,9 +19,9 @@ interface AnalysisResultProps {
 
 export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResultProps) {
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600 bg-green-100';
-    if (score >= 60) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
+    if (score >= 80) return 'success';
+    if (score >= 60) return 'warning';
+    return 'error';
   };
 
   const getScoreEmoji = (score: number) => {
@@ -23,156 +33,134 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* Header with Score */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-        <div className="text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            ✨ 분석 완료!
-          </h2>
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className={`inline-flex items-center px-6 py-3 rounded-full font-bold text-lg ${getScoreColor(result.overallScore)}`}>
-              <span className="text-2xl mr-2">{getScoreEmoji(result.overallScore)}</span>
-              종합 점수: {result.overallScore}점
-            </div>
-          </div>
-          <p className="text-gray-800 text-sm md:text-base leading-relaxed">
-            {result.summary}
-          </p>
-        </div>
-      </div>
+    <Box width="100%" maxWidth="900px" mx="auto" my={4}>
+      {/* Header with Score & Summary */}
+      <Card variant="outlined" sx={{ borderRadius: 3, mb: 4 }}>
+        <CardContent>
+          <Box textAlign="center">
+            <Typography variant="h5" fontWeight="bold" mb={1}>
+              ✨ 분석 결과 요약
+            </Typography>
+            <Chip
+              label={`종합 점수: ${result.overallScore}점`}
+              color={getScoreColor(result.overallScore)}
+              icon={<span>{getScoreEmoji(result.overallScore)}</span>}
+              sx={{ fontSize: '1.1rem', px: 2, py: 1, mb: 2, mt: 1 }}
+            />
+            <Typography variant="body1" color="text.secondary" mb={2}>
+              {result.summary}
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
 
-      {/* Strengths and Weaknesses */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Strengths */}
-        <div className="bg-green-50 rounded-2xl border border-green-200 p-6">
-          <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center">
-            <span className="text-xl mr-2">💪</span>
-            강점
-          </h3>
-          <ul className="space-y-3">
-            {result.strengths.map((strength, index) => (
-              <li key={index} className="flex items-start space-x-2">
-                <span className="text-green-600 mt-1">✓</span>
-                <span className="text-green-700 text-sm">{strength}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Strengths, Weaknesses, Technical Feedback */}
+      <Box display="grid" gridTemplateColumns={{ xs: '1fr', md: '1fr 1fr 1fr' }} gap={3} mb={4}>
+        {/* 강점 */}
+        <Card variant="outlined" sx={{ borderRadius: 3, bgcolor: 'success.lighter', borderColor: 'success.light' }}>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight="bold" color="success.main" mb={2}>
+              💪 강점
+            </Typography>
+            <List>
+              {result.strengths.map((strength, index) => (
+                <ListItem key={index}>
+                  <ListItemIcon>
+                    <span role="img" aria-label="check">✓</span>
+                  </ListItemIcon>
+                  <ListItemText primary={strength} primaryTypographyProps={{ color: 'success.dark', fontSize: '1rem' }} />
+                </ListItem>
+              ))}
+            </List>
+          </CardContent>
+        </Card>
+        {/* 약점 */}
+        <Card variant="outlined" sx={{ borderRadius: 3, bgcolor: 'error.lighter', borderColor: 'error.light' }}>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight="bold" color="error.main" mb={2}>
+              ⚠️ 약점
+            </Typography>
+            <List>
+              {result.weaknesses.map((weakness, index) => (
+                <ListItem key={index}>
+                  <ListItemIcon>
+                    <span role="img" aria-label="cross">✗</span>
+                  </ListItemIcon>
+                  <ListItemText primary={weakness} primaryTypographyProps={{ color: 'error.dark', fontSize: '1rem' }} />
+                </ListItem>
+              ))}
+            </List>
+          </CardContent>
+        </Card>
+        {/* 기술 피드백 */}
+        <Card variant="outlined" sx={{ borderRadius: 3, bgcolor: 'info.lighter', borderColor: 'info.light' }}>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight="bold" color="info.main" mb={2}>
+              🛠️ 기술 피드백
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              <b>코드 리뷰:</b> {result.technicalFeedback.codeReview}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              <b>모범 사례:</b> {result.technicalFeedback.bestPractices}
+            </Typography>
+            {result.technicalFeedback.techStack && (
+              <Typography variant="body2" color="text.secondary">
+                <b>기술 스택:</b> {result.technicalFeedback.techStack}
+              </Typography>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
 
-        {/* Weaknesses */}
-        <div className="bg-orange-50 rounded-2xl border border-orange-200 p-6">
-          <h3 className="text-lg font-bold text-orange-800 mb-4 flex items-center">
-            <span className="text-xl mr-2">🎯</span>
-            개선점
-          </h3>
-          <ul className="space-y-3">
-            {result.weaknesses.map((weakness, index) => (
-              <li key={index} className="flex items-start space-x-2">
-                <span className="text-orange-600 mt-1">!</span>
-                <span className="text-orange-700 text-sm">{weakness}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Technical Feedback */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-          <span className="text-2xl mr-2">⚡</span>
-          기술적 피드백
-        </h3>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Code Review */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-gray-800 flex items-center">
-              <span className="text-lg mr-2">🔍</span>
-              코드 리뷰
-            </h4>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {result.technicalFeedback.codeReview}
-              </p>
-            </div>
-          </div>
-
-          {/* Best Practices */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-gray-800 flex items-center">
-              <span className="text-lg mr-2">⭐</span>
-              베스트 프랙티스
-            </h4>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {result.technicalFeedback.bestPractices}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Project Analysis */}
+      {/* 프로젝트별 분석 (optional) */}
       {result.projectAnalysis && (
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-            <span className="text-2xl mr-2">🧩</span>
-            프로젝트 분석
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gray-50 rounded-xl p-4 text-center">
-              <div className="text-lg font-semibold text-gray-700 mb-2">복잡도</div>
-              <div className="text-2xl font-bold text-blue-700">{result.projectAnalysis.complexity}</div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4 text-center">
-              <div className="text-lg font-semibold text-gray-700 mb-2">완성도</div>
-              <div className="text-2xl font-bold text-blue-700">{result.projectAnalysis.completeness}</div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4 text-center">
-              <div className="text-lg font-semibold text-gray-700 mb-2">혁신성</div>
-              <div className="text-2xl font-bold text-blue-700">{result.projectAnalysis.innovation}</div>
-            </div>
-          </div>
-        </div>
+        <Card variant="outlined" sx={{ borderRadius: 3, mb: 4 }}>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight="bold" color="primary" mb={2}>
+              📊 프로젝트별 분석
+            </Typography>
+            <Box display="flex" justifyContent="center" gap={4}>
+              <Box textAlign="center">
+                <Typography variant="body2" color="text.secondary">복잡도</Typography>
+                <Chip label={result.projectAnalysis.complexity} color="primary" />
+              </Box>
+              <Box textAlign="center">
+                <Typography variant="body2" color="text.secondary">완성도</Typography>
+                <Chip label={result.projectAnalysis.completeness} color="primary" />
+              </Box>
+              <Box textAlign="center">
+                <Typography variant="body2" color="text.secondary">혁신성</Typography>
+                <Chip label={result.projectAnalysis.innovation} color="primary" />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Technical Stack (optional) */}
-      {result.technicalFeedback.techStack && (
-        <div className="bg-gray-50 rounded-xl p-4 mt-4">
-          <div className="text-gray-700 text-sm leading-relaxed">
-            <span className="font-semibold">기술 스택:</span> {result.technicalFeedback.techStack}
-          </div>
-        </div>
-      )}
+      {/* 다음 단계 제안 */}
+      <Card variant="outlined" sx={{ borderRadius: 3, mb: 4 }}>
+        <CardContent>
+          <Typography variant="subtitle1" fontWeight="bold" color="secondary" mb={2}>
+            🚀 다음 단계 제안
+          </Typography>
+          <List>
+            {result.nextSteps.map((step, idx) => (
+              <ListItem key={idx}>
+                <ListItemIcon>➡️</ListItemIcon>
+                <ListItemText primary={step} />
+              </ListItem>
+            ))}
+          </List>
+        </CardContent>
+      </Card>
 
-      {/* Next Steps */}
-      <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6 md:p-8">
-        <h3 className="text-xl font-bold text-blue-800 mb-6 flex items-center">
-          <span className="text-2xl mr-2">🚀</span>
-          다음 단계
-        </h3>
-        <ul className="space-y-3">
-          {result.nextSteps.map((step, index) => (
-            <li key={index} className="flex items-start space-x-3">
-              <span className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
-                {index + 1}
-              </span>
-              <span className="text-blue-700 text-sm leading-relaxed">{step}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Action Button */}
-      <div className="text-center">
-        <button
-          onClick={onNewAnalysis}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-        >
-          새로운 분석 시작하기
-        </button>
-      </div>
-    </div>
+      {/* New Analysis Button */}
+      <Box textAlign="center" mt={2}>
+        <Button variant="contained" color="primary" onClick={onNewAnalysis} size="large">
+          새 분석 시작하기
+        </Button>
+      </Box>
+    </Box>
   );
 }
