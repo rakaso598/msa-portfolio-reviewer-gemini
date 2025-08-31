@@ -1,4 +1,4 @@
-# MSA Portfolio Reviewer - ✨[바로가기](https://msa-portfoilo-reviewer-gemini.vercel.app)
+# MSA Portfolio Reviewer - ✨[바로가기](https://msa-portfolio-reviewer-gemini.vercel.app)
 
 ## AI 기반 포트폴리오 종합 분석 서비스
 
