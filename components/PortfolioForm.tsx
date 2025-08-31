@@ -63,7 +63,7 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
 
   return (
     <Box component="form" onSubmit={handleSubmit} maxWidth="500px" mx="auto" mt={4}>
-      <Typography variant="h6" fontWeight="bold" mb={2}>
+      <Typography variant="h6" fontWeight="bold" mb={2} className="text-black">
         포트폴리오 분석 요청
       </Typography>
       <TextField
