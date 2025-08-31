@@ -74,7 +74,7 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
           <Typography variant="body2" color="text.secondary" mb={3} textAlign="center">
             GitHub, 블로그, 이력서 정보를 입력하면 AI가 포트폴리오를 분석해드립니다.
           </Typography>
-          <Box component="form" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <Stack spacing={2}>
               <TextField
                 label="GitHub URL"
@@ -113,7 +113,7 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
                 </Button>
               </Box>
             </Stack>
-          </Box>
+          </form>
         </CardContent>
       </Card>
     </Box>
