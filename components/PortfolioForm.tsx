@@ -56,8 +56,8 @@ export default function PortfolioForm({ onSubmit, isLoading }: PortfolioFormProp
     const cleanData: PortfolioAnalysisRequest = {
       githubUrl: formData.githubUrl.trim(),
     };
-    if (formData.blogUrl.trim()) cleanData.blogUrl = formData.blogUrl.trim();
-    if (formData.resumeText.trim()) cleanData.resumeText = formData.resumeText.trim();
+    if (formData.blogUrl && formData.blogUrl.trim()) cleanData.blogUrl = formData.blogUrl.trim();
+    if (formData.resumeText && formData.resumeText.trim()) cleanData.resumeText = formData.resumeText.trim();
     onSubmit(cleanData);
   };
 
