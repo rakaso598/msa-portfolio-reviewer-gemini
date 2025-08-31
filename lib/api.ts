@@ -1,4 +1,5 @@
 import { PortfolioAnalysisRequest, PortfolioAnalysisResponse, ApiError } from '@/types/portfolio';
+import { PortfolioAnalysisResponseSchema } from '@/types/portfolio.zod';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -55,7 +56,12 @@ export async function analyzePortfolio(data: PortfolioAnalysisRequest, apiKey: s
     }
 
     const result = await response.json();
-    return result as PortfolioAnalysisResponse;
+    // Zod로 응답 검증
+    const parsed = PortfolioAnalysisResponseSchema.safeParse(result);
+    if (!parsed.success) {
+      throw new PortfolioApiError('API 응답 형식이 올바르지 않습니다.');
+    }
+    return parsed.data;
   } catch (error) {
     if (error instanceof PortfolioApiError) {
       throw error;

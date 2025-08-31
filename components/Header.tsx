@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { useApiKey } from '@/contexts/ApiKeyContext';
 import ApiKeyModal from './ApiKeyModal';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 export default function Header() {
   const { isAuthenticated, clearApiKey } = useApiKey();
@@ -20,34 +25,23 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-bold text-gray-900">
-                🔍 포트폴리오 AI 리뷰어
-              </h1>
-            </div>
-
-            <button
-              onClick={handleKeyClick}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all ${isAuthenticated
-                  ? 'text-green-700 bg-green-50 border border-green-200 hover:bg-green-100'
-                  : 'text-red-700 bg-red-50 border border-red-200 hover:bg-red-100'
-                }`}
-              title={isAuthenticated ? '접근 키가 설정됨 (클릭하여 삭제)' : '접근 키 설정 필요 (클릭하여 설정)'}
-            >
-              <span className="text-lg">
-                {isAuthenticated ? '🔓' : '🔒'}
-              </span>
-              <span className="text-sm hidden sm:inline">
-                {isAuthenticated ? '접근 키 설정됨' : '접근 키 설정'}
-              </span>
-            </button>
-          </div>
-        </div>
-      </header>
-
+      <AppBar position="sticky" color="default" elevation={1} sx={{ zIndex: 1200 }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h6" component="div" fontWeight="bold">
+            🔍 포트폴리오 AI 리뷰어
+          </Typography>
+          <Button
+            onClick={handleKeyClick}
+            variant={isAuthenticated ? 'outlined' : 'contained'}
+            color={isAuthenticated ? 'success' : 'error'}
+            startIcon={<span>{isAuthenticated ? '🔓' : '🔒'}</span>}
+            sx={{ borderRadius: 3, fontWeight: 500 }}
+            title={isAuthenticated ? '접근 키가 설정됨 (클릭하여 삭제)' : '접근 키 설정 필요 (클릭하여 설정)'}
+          >
+            {isAuthenticated ? '접근 키 설정됨' : '접근 키 설정'}
+          </Button>
+        </Toolbar>
+      </AppBar>
       <ApiKeyModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
