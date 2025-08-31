@@ -6,7 +6,6 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -55,8 +54,8 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
         </CardContent>
       </Card>
       {/* Strengths and Weaknesses */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+      <Box display="grid" gridTemplateColumns={{ xs: '1fr', md: '1fr 1fr' }} gap={3}>
+        <Box>
           <Card variant="outlined" sx={{ borderRadius: 3, bgcolor: 'success.lighter', borderColor: 'success.light' }}>
             <CardContent>
               <Typography variant="subtitle1" fontWeight="bold" color="success.main" mb={2}>
@@ -74,8 +73,8 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
               </List>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Box>
+        <Box>
           <Card variant="outlined" sx={{ borderRadius: 3, bgcolor: 'error.lighter', borderColor: 'error.light' }}>
             <CardContent>
               <Typography variant="subtitle1" fontWeight="bold" color="error.main" mb={2}>
@@ -93,8 +92,8 @@ export default function AnalysisResult({ result, onNewAnalysis }: AnalysisResult
               </List>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
       {/* New Analysis Button */}
       <Box textAlign="center" mt={4}>
         <Button variant="contained" color="primary" onClick={onNewAnalysis} size="large">
